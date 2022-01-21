@@ -2,7 +2,7 @@
 
 # class for the board nodes
 class Node
-  attr_reader :location
+  attr_reader :location, :parent
   attr_accessor :children
 
   def initialize(location, parent = nil)
@@ -21,7 +21,7 @@ class Node
   end
 
   def create_child(coords)
-    @children << Node.new([coords[0], coords[1]], location)
+    @children << Node.new([coords[0], coords[1]], self)
   end
 
   def find_children_helper
@@ -32,11 +32,24 @@ end
 
 # class for the Graph
 class Graph
-  attr_accessor :root
+  attr_accessor :root, :visited
 
   def initialize(root)
     @root = root
     @visited = []
+  end
+
+  def find_path(end_point)
+    queue = [@root]
+    while queue
+      node = queue.shift
+      visited << node
+      node.add_children
+      break if node.location == end_point
+
+      node.children.each { |n| queue << n unless visited.include?(n) }
+    end
+    node
   end
 end
 
@@ -49,7 +62,7 @@ class Game
     @end_point = nil
   end
 
-  def knight_moves(start_point)
+  def knight_moves(start_point, end_point)
     @start_point = create_graph(start_point)
   end
 
