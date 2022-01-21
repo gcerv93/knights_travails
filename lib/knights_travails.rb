@@ -69,7 +69,16 @@ class Game
   def create_graph(start_node)
     start_node = Node.new(start_node)
     start_node.add_children
-    graph = Graph.new(start_node)
-    @graph = graph.root
+    @graph = Graph.new(start_node)
+  end
+
+  def format_path(node)
+    parents = [node.location]
+    until node.parent.nil?
+      parent = node.parent
+      node = parent
+      parents << node.location
+    end
+    p parents.reverse
   end
 end
