@@ -24,3 +24,33 @@ class Node
      [1, -2], [-1, -2], [-2, -1], [-2, 1]]
   end
 end
+
+# class for the Graph
+class Graph
+  attr_accessor :root
+
+  def initialize(root)
+    @root = root
+  end
+end
+
+# class for the knight object
+class Game
+  attr_accessor :start_point, :end_point
+
+  def initialize
+    @start_point = nil
+    @end_point = nil
+  end
+
+  def knight_moves(start_point, end_point)
+    @start_point = create_graph(start_point)
+  end
+
+  def create_graph(start_node)
+    start_node = Node.new(start_node)
+    start_node.add_children
+    graph = Graph.new(start_node)
+    graph.root
+  end
+end
