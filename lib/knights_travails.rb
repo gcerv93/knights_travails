@@ -5,7 +5,7 @@ class Node
   attr_reader :location, :parent
   attr_accessor :children
 
-  # initialize a node with a location and a parent, set to nil for the root node of a graph
+  # initialize a node with a location and a parent set to nil for the root node of a graph
   def initialize(location, parent = nil)
     @location = location
     @children = []
@@ -94,8 +94,6 @@ class Game
   # format the results to print
   def format_results(parents)
     puts "You made it in #{parents.length - 1} moves! Here's your path:"
-    parents.each do |parent|
-      p parent
-    end
+    parents.each { |parent| p parent }
   end
 end
