@@ -5,12 +5,15 @@ class Node
   attr_reader :location, :parent
   attr_accessor :children
 
+  # initialize a node with a location and a parent, set to nil for the root node of a graph
   def initialize(location, parent = nil)
     @location = location
     @children = []
     @parent = parent
   end
 
+  # add children to a node using the children_helper method, making sure no moves
+  # fall outside of the board
   def add_children(helper = find_children_helper, location = @location)
     moves = []
     helper.each do |nums|
@@ -20,10 +23,12 @@ class Node
     end
   end
 
+  # create the child with its parent attribute set as current node
   def create_child(coords)
     @children << Node.new([coords[0], coords[1]], self)
   end
 
+  # method to help find the legal moves a knight can make
   def find_children_helper
     [[-1, 2], [1, 2], [2, 1], [2, -1],
      [1, -2], [-1, -2], [-2, -1], [-2, 1]]
@@ -32,53 +37,65 @@ end
 
 # class for the Graph
 class Graph
-  attr_accessor :root, :visited
+  attr_reader :root
+  attr_accessor :visited
 
   def initialize(root)
     @root = root
     @visited = []
   end
 
+  # find the path to the end_point using breadth first search
   def find_path(end_point)
     queue = [@root]
     while queue
       node = queue.shift
-      visited << node
-      node.add_children
       break if node.location == end_point
 
-      node.children.each { |n| queue << n unless visited.include?(n) }
+      # send every node being processed to the visited array
+      visited << node
+      node.add_children
+
+      # enqueue node children if they haven't been visited yet
+      node.children.each { |child| queue << child unless visited.include?(child) }
     end
     node
+  end
+
+  # follow path back up from end_node to the first parent
+  def find_parents(end_node)
+    parents = [end_node.location]
+    until end_node.parent.nil?
+      parent = end_node.parent
+      end_node = parent
+      parents << end_node.location
+    end
+    parents.reverse
   end
 end
 
 # class for the knight object
 class Game
-  attr_accessor :start_point, :end_point, :graph
-
-  def initialize
-    @start_point = nil
-    @end_point = nil
-  end
+  attr_accessor :graph
 
   def knight_moves(start_point, end_point)
-    @start_point = create_graph(start_point)
+    @graph = create_graph(start_point)
+    end_node = graph.find_path(end_point)
+    format_results(graph.find_parents(end_node))
   end
 
+  # create the graph with the starting node, and its children
   def create_graph(start_node)
     start_node = Node.new(start_node)
     start_node.add_children
-    @graph = Graph.new(start_node)
+    Graph.new(start_node)
   end
 
-  def format_path(node)
-    parents = [node.location]
-    until node.parent.nil?
-      parent = node.parent
-      node = parent
-      parents << node.location
+  # format the results to print
+  def format_results(parents)
+    puts "You made it in #{parents.length - 1} moves! Here's your path:"
+    parents.each do |parent|
+      p parent
     end
-    p parents.reverse
   end
 end
